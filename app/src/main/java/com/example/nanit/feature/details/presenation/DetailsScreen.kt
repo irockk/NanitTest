@@ -5,7 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -53,11 +54,17 @@ fun DetailsScreen(
     uiState: DetailsState,
     updateImage: (uri: Uri) -> Unit,
     updateName: (newName: String) -> Unit,
-    updateBirthday: (date: Long?) -> Unit
+    updateBirthday: (date: Long?) -> Unit,
+    saveData: () -> Unit
 ) {
-    val currentName = remember { mutableStateOf(TextFieldValue(uiState.name)) }
+    val currentName = remember(uiState.name.isBlank()) {
+        mutableStateOf(TextFieldValue(text = uiState.name))
+    }
 
     val isDatePickerShown = rememberSaveable { mutableStateOf(false) }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     if (isDatePickerShown.value) {
         DatePickerModal(
@@ -69,75 +76,81 @@ fun DetailsScreen(
         )
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(Dimens.screenPadding),
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        contentPadding = PaddingValues(Dimens.screenPadding)
     ) {
-        Text(text = stringResource(R.string.app_name))
+        item {
+            Text(text = stringResource(R.string.app_name))
 
-        Spacer(Modifier.height(Dimens.paddingMedium))
+            Spacer(Modifier.height(Dimens.paddingMedium))
 
-        val keyboardController = LocalSoftwareKeyboardController.current
-        val focusManager = LocalFocusManager.current
+            Button(
+                onClick = saveData
+            ) {
+                Text(text = stringResource(R.string.details_save_button))
+            }
 
-        TextField(
-            value = currentName.value,
-            onValueChange = {
-                currentName.value = it
-                updateName(it.text)
-            },
-            label = {
-                Text(stringResource(R.string.details_name))
-            },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
+            Spacer(Modifier.height(Dimens.paddingMedium))
+
+            TextField(
+                value = currentName.value,
+                onValueChange = {
+                    currentName.value = it
+                    updateName(it.text)
+                },
+                label = {
+                    Text(stringResource(R.string.details_name))
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    }
+                )
+            )
+
+            Spacer(Modifier.height(Dimens.paddingMedium))
+
+            Text(
+                modifier = Modifier.clickable { isDatePickerShown.value = true },
+                text = if (uiState.birthday == null) {
+                    stringResource(R.string.details_birthday_picker_button)
+                } else {
+                    stringResource(R.string.details_birthday, uiState.birthday.toFormatedDate())
                 }
             )
-        )
 
-        Spacer(Modifier.height(Dimens.paddingMedium))
+            Spacer(Modifier.height(Dimens.paddingMedium))
 
-        Text(
-            modifier = Modifier.clickable { isDatePickerShown.value = true },
-            text = if (uiState.birthday == null) {
-                stringResource(R.string.details_birthday_picker_button)
-            } else {
-                stringResource(R.string.details_birthday, uiState.birthday.toFormatedDate())
+            ProfileImage(
+                modifier = Modifier
+                    .padding(horizontal = Dimens.paddingBig)
+                    .aspectRatio(1f),
+                uri = uiState.image
+            )
+
+            Spacer(Modifier.height(Dimens.paddingMedium))
+
+            Row {
+                CameraLauncherComponent(updateImage = updateImage)
+
+                Spacer(Modifier.width(Dimens.paddingSmall))
+
+                GalleryLauncherComponent(updateImage = updateImage)
             }
-        )
 
-        Spacer(Modifier.height(Dimens.paddingMedium))
+            Spacer(Modifier.height(Dimens.paddingMedium))
 
-        ProfileImage(
-            modifier = Modifier
-                .padding(horizontal = Dimens.paddingBig)
-                .aspectRatio(1f),
-            uri = uiState.image
-        )
-
-        Spacer(Modifier.height(Dimens.paddingMedium))
-
-        Row {
-            CameraLauncherComponent(updateImage = updateImage)
-
-            Spacer(Modifier.width(Dimens.paddingSmall))
-
-            GalleryLauncherComponent(updateImage = updateImage)
-        }
-
-        Spacer(Modifier.height(Dimens.paddingMedium))
-
-        Button(
-            onClick = { /*TODO navigate to birthday screen*/ },
-            enabled = uiState.isButtonEnabled
-        ) {
-            Text(stringResource(R.string.details_birthday_button))
+            Button(
+                onClick = { /*TODO navigate to birthday screen*/ },
+                enabled = uiState.isButtonEnabled
+            ) {
+                Text(stringResource(R.string.details_birthday_button))
+            }
         }
     }
 }

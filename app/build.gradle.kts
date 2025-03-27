@@ -64,6 +64,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network)
 
+    implementation(libs.gson.gson)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
