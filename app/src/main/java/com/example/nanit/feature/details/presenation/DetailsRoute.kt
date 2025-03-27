@@ -11,6 +11,7 @@ fun DetailsRoute() {
     val uiState by viewModel.uiState.collectAsState()
 
     DetailsScreen(
-        uiState = uiState
+        uiState = uiState,
+        updateImage = viewModel::setImage
     )
 }

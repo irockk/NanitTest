@@ -5,9 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -28,11 +32,14 @@ import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import com.example.nanit.R
 import com.example.nanit.core.toFormatedDate
-import com.example.nanit.ui.components.getAppTitle
+import com.example.nanit.ui.components.CameraLauncherComponent
+import com.example.nanit.ui.components.GalleryLauncherComponent
 import com.example.nanit.ui.theme.Dimens
 
 @Composable
-fun DetailsScreen(uiState: DetailsState) {
+fun DetailsScreen(
+    uiState: DetailsState, updateImage: (uri: Uri) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,9 +47,17 @@ fun DetailsScreen(uiState: DetailsState) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = getAppTitle())
+        Text(text = stringResource(R.string.app_name))
+
+        Spacer(Modifier.height(Dimens.paddingMedium))
+
         Text(text = stringResource(R.string.details_name, uiState.name))
+
+        Spacer(Modifier.height(Dimens.paddingMedium))
+
         Text(text = stringResource(R.string.details_birthday, uiState.birthday.toFormatedDate()))
+
+        Spacer(Modifier.height(Dimens.paddingMedium))
 
         ProfileImage(
             modifier = Modifier
@@ -51,11 +66,23 @@ fun DetailsScreen(uiState: DetailsState) {
             uri = uiState.image
         )
 
+        Spacer(Modifier.height(Dimens.paddingMedium))
+
+        Row {
+            CameraLauncherComponent(updateImage = updateImage)
+
+            Spacer(Modifier.width(Dimens.paddingSmall))
+
+            GalleryLauncherComponent(updateImage = updateImage)
+        }
+
+        Spacer(Modifier.height(Dimens.paddingMedium))
+
         Button(
-            onClick = { /*TODO Navigate to birthday screen */ },
+            onClick = { /*TODO navigate to birthday screen*/ },
             enabled = uiState.isButtonEnabled
         ) {
-            Text(stringResource(R.string.details_button_text))
+            Text(stringResource(R.string.details_birthday_button))
         }
     }
 }
@@ -67,10 +94,7 @@ private fun ProfileImage(
 ) {
     SubcomposeAsyncImage(
         modifier = modifier.clip(CircleShape),
-        model = ImageRequest
-            .Builder(LocalContext.current)
-            .data(uri)
-            .build(),
+        model = ImageRequest.Builder(LocalContext.current).data(uri).build(),
         contentDescription = null,
         error = {
             Box(

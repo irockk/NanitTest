@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.example.nanit.core.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import org.koin.core.annotation.Factory
 
 data class DetailsState(
@@ -20,4 +21,8 @@ class DetailsViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailsState())
     val uiState = _uiState.asStateFlow()
+
+    fun setImage(uri: Uri) {
+        _uiState.update { uiState -> uiState.copy(image = uri) }
+    }
 }
