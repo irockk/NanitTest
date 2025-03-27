@@ -29,4 +29,8 @@ class DetailsViewModel : ViewModel() {
     fun updateName(newName: String) {
         _uiState.update { uiState -> uiState.copy(name = newName) }
     }
+
+    fun updateBirthday(date: Long?) {
+        _uiState.update { uiState -> uiState.copy(birthday = date) }
+    }
 }

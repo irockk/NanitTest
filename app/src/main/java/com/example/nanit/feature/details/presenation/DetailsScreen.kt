@@ -2,6 +2,7 @@ package com.example.nanit.feature.details.presenation
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Button
@@ -23,6 +26,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,13 +34,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import com.example.nanit.R
 import com.example.nanit.core.toFormatedDate
 import com.example.nanit.ui.components.CameraLauncherComponent
+import com.example.nanit.ui.components.DatePickerModal
 import com.example.nanit.ui.components.GalleryLauncherComponent
 import com.example.nanit.ui.theme.Dimens
 
@@ -44,8 +52,23 @@ import com.example.nanit.ui.theme.Dimens
 fun DetailsScreen(
     uiState: DetailsState,
     updateImage: (uri: Uri) -> Unit,
-    updateName: (newName: String) -> Unit
+    updateName: (newName: String) -> Unit,
+    updateBirthday: (date: Long?) -> Unit
 ) {
+    val currentName = remember { mutableStateOf(TextFieldValue(uiState.name)) }
+
+    val isDatePickerShown = rememberSaveable { mutableStateOf(false) }
+
+    if (isDatePickerShown.value) {
+        DatePickerModal(
+            onDateSelected = { date ->
+                updateBirthday(date)
+                isDatePickerShown.value = false
+            },
+            onDismiss = { isDatePickerShown.value = false }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,11 +76,12 @@ fun DetailsScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        val currentName = remember { mutableStateOf(TextFieldValue(uiState.name)) }
-
         Text(text = stringResource(R.string.app_name))
 
         Spacer(Modifier.height(Dimens.paddingMedium))
+
+        val keyboardController = LocalSoftwareKeyboardController.current
+        val focusManager = LocalFocusManager.current
 
         TextField(
             value = currentName.value,
@@ -67,12 +91,26 @@ fun DetailsScreen(
             },
             label = {
                 Text(stringResource(R.string.details_name))
-            }
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                }
+            )
         )
 
         Spacer(Modifier.height(Dimens.paddingMedium))
 
-        Text(text = stringResource(R.string.details_birthday, uiState.birthday.toFormatedDate()))
+        Text(
+            modifier = Modifier.clickable { isDatePickerShown.value = true },
+            text = if (uiState.birthday == null) {
+                stringResource(R.string.details_birthday_picker_button)
+            } else {
+                stringResource(R.string.details_birthday, uiState.birthday.toFormatedDate())
+            }
+        )
 
         Spacer(Modifier.height(Dimens.paddingMedium))
 
