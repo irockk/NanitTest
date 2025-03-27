@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Nanit</string>
-    <string name="details_name">Name: %1$s</string>
-    <string name="details_birthday">Birthday: %1$s</string>
-    <string name="details_button_text">Show birthday screen</string>
+    <string name="details_name">Name</string> hint or placeholder ?
+    <string name="details_birthday">Birthday: %1$s</string> title ?
+    <string name="details_birthday_button">Show birthday screen</string>
+    <string name="details_take_a_photo_button">Take a photo</string>
+    <string name="details_select_from_gallery_button">Select from gallery</string>
+    <string name="details_birthday_picker_button">Click to pick birthday date</string>
+    <string name="details_save_button">Save</string>
 </resources>

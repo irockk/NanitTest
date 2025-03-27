@@ -2,20 +2,32 @@ package com.example.nanit.feature.details.presenation
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,39 +35,122 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import com.example.nanit.R
 import com.example.nanit.core.toFormatedDate
-import com.example.nanit.ui.components.getAppTitle
+import com.example.nanit.ui.components.CameraLauncherComponent
+import com.example.nanit.ui.components.DatePickerModal
+import com.example.nanit.ui.components.GalleryLauncherComponent
 import com.example.nanit.ui.theme.Dimens
 
 @Composable
-fun DetailsScreen(uiState: DetailsState) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(Dimens.screenPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(text = getAppTitle())
-        Text(text = stringResource(R.string.details_name, uiState.name))
-        Text(text = stringResource(R.string.details_birthday, uiState.birthday.toFormatedDate()))
+fun DetailsScreen(
+    uiState: DetailsState,
+    updateImage: (uri: Uri) -> Unit,
+    updateName: (newName: String) -> Unit,
+    updateBirthday: (date: Long?) -> Unit,
+    saveData: () -> Unit
+) {
+    val currentName = remember(uiState.name.isBlank()) {
+        mutableStateOf(TextFieldValue(text = uiState.name))
+    }
 
-        ProfileImage(
-            modifier = Modifier
-                .padding(horizontal = Dimens.paddingBig)
-                .aspectRatio(1f),
-            uri = uiState.image
+    val isDatePickerShown = rememberSaveable { mutableStateOf(false) }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
+    if (isDatePickerShown.value) {
+        DatePickerModal(
+            onDateSelected = { date ->
+                updateBirthday(date)
+                isDatePickerShown.value = false
+            },
+            onDismiss = { isDatePickerShown.value = false }
         )
+    }
 
-        Button(
-            onClick = { /*TODO Navigate to birthday screen */ },
-            enabled = uiState.isButtonEnabled
-        ) {
-            Text(stringResource(R.string.details_button_text))
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        contentPadding = PaddingValues(Dimens.screenPadding)
+    ) {
+        item {
+            Text(text = stringResource(R.string.app_name))
+
+            Spacer(Modifier.height(Dimens.paddingMedium))
+
+            Button(
+                onClick = saveData
+            ) {
+                Text(text = stringResource(R.string.details_save_button))
+            }
+
+            Spacer(Modifier.height(Dimens.paddingMedium))
+
+            TextField(
+                value = currentName.value,
+                onValueChange = {
+                    currentName.value = it
+                    updateName(it.text)
+                },
+                label = {
+                    Text(stringResource(R.string.details_name))
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    }
+                )
+            )
+
+            Spacer(Modifier.height(Dimens.paddingMedium))
+
+            Text(
+                modifier = Modifier.clickable { isDatePickerShown.value = true },
+                text = if (uiState.birthday == null) {
+                    stringResource(R.string.details_birthday_picker_button)
+                } else {
+                    stringResource(R.string.details_birthday, uiState.birthday.toFormatedDate())
+                }
+            )
+
+            Spacer(Modifier.height(Dimens.paddingMedium))
+
+            ProfileImage(
+                modifier = Modifier
+                    .padding(horizontal = Dimens.paddingBig)
+                    .aspectRatio(1f),
+                uri = uiState.image
+            )
+
+            Spacer(Modifier.height(Dimens.paddingMedium))
+
+            Row {
+                CameraLauncherComponent(updateImage = updateImage)
+
+                Spacer(Modifier.width(Dimens.paddingSmall))
+
+                GalleryLauncherComponent(updateImage = updateImage)
+            }
+
+            Spacer(Modifier.height(Dimens.paddingMedium))
+
+            Button(
+                onClick = { /*TODO navigate to birthday screen*/ },
+                enabled = uiState.isButtonEnabled
+            ) {
+                Text(stringResource(R.string.details_birthday_button))
+            }
         }
     }
 }
@@ -67,10 +162,7 @@ private fun ProfileImage(
 ) {
     SubcomposeAsyncImage(
         modifier = modifier.clip(CircleShape),
-        model = ImageRequest
-            .Builder(LocalContext.current)
-            .data(uri)
-            .build(),
+        model = ImageRequest.Builder(LocalContext.current).data(uri).build(),
         contentDescription = null,
         error = {
             Box(
