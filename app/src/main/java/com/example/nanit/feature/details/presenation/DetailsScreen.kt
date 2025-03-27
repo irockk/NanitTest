@@ -55,7 +55,8 @@ fun DetailsScreen(
     updateImage: (uri: Uri) -> Unit,
     updateName: (newName: String) -> Unit,
     updateBirthday: (date: Long?) -> Unit,
-    saveData: () -> Unit
+    saveData: () -> Unit,
+    goToBirthday: () -> Unit
 ) {
     val currentName = remember(uiState.name.isBlank()) {
         mutableStateOf(TextFieldValue(text = uiState.name))
@@ -146,7 +147,7 @@ fun DetailsScreen(
             Spacer(Modifier.height(Dimens.paddingMedium))
 
             Button(
-                onClick = { /*TODO navigate to birthday screen*/ },
+                onClick = goToBirthday,
                 enabled = uiState.isButtonEnabled
             ) {
                 Text(stringResource(R.string.details_birthday_button))
