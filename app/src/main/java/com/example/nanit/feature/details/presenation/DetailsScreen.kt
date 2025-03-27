@@ -19,7 +19,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +31,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import com.example.nanit.R
@@ -38,7 +42,9 @@ import com.example.nanit.ui.theme.Dimens
 
 @Composable
 fun DetailsScreen(
-    uiState: DetailsState, updateImage: (uri: Uri) -> Unit
+    uiState: DetailsState,
+    updateImage: (uri: Uri) -> Unit,
+    updateName: (newName: String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -47,11 +53,22 @@ fun DetailsScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        val currentName = remember { mutableStateOf(TextFieldValue(uiState.name)) }
+
         Text(text = stringResource(R.string.app_name))
 
         Spacer(Modifier.height(Dimens.paddingMedium))
 
-        Text(text = stringResource(R.string.details_name, uiState.name))
+        TextField(
+            value = currentName.value,
+            onValueChange = {
+                currentName.value = it
+                updateName(it.text)
+            },
+            label = {
+                Text(stringResource(R.string.details_name))
+            }
+        )
 
         Spacer(Modifier.height(Dimens.paddingMedium))
 

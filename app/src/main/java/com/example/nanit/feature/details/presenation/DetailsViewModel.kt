@@ -25,4 +25,8 @@ class DetailsViewModel : ViewModel() {
     fun setImage(uri: Uri) {
         _uiState.update { uiState -> uiState.copy(image = uri) }
     }
+
+    fun updateName(newName: String) {
+        _uiState.update { uiState -> uiState.copy(name = newName) }
+    }
 }

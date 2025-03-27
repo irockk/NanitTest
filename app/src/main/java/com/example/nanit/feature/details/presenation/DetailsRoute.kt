@@ -12,6 +12,7 @@ fun DetailsRoute() {
 
     DetailsScreen(
         uiState = uiState,
-        updateImage = viewModel::setImage
+        updateImage = viewModel::setImage,
+        updateName = viewModel::updateName
     )
 }
