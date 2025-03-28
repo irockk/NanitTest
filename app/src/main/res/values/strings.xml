@@ -8,4 +8,9 @@
     <string name="details_birthday_picker_button">Click to pick birthday date</string>
     <string name="details_save_button">Save</string>
     <string name="birthday_name_text">Today %1$s is</string>
+    <string name="birthday_unit_years">years</string>
+    <string name="birthday_unit_year">year</string>
+    <string name="birthday_unit_months">months</string>
+    <string name="birthday_unit_month">month</string>
+    <string name="birthday_unit_old_text">%1$s old</string>
 </resources>

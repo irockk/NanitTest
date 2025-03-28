@@ -23,7 +23,7 @@ fun Navigator(modifier: Modifier = Modifier) {
             )
         }
         composable(route = Screen.Birthday.route) {
-            BirthdayRoute()
+            BirthdayRoute(navController = navController)
         }
     }
 }

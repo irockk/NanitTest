@@ -86,7 +86,7 @@ fun DetailsScreen(
         item {
             Text(text = stringResource(R.string.app_name))
 
-            Spacer(Modifier.height(Dimens.paddingMedium))
+            Spacer(Modifier.height(Dimens.paddingSmall))
 
             Button(
                 onClick = saveData
@@ -94,7 +94,7 @@ fun DetailsScreen(
                 Text(text = stringResource(R.string.details_save_button))
             }
 
-            Spacer(Modifier.height(Dimens.paddingMedium))
+            Spacer(Modifier.height(Dimens.paddingSmall))
 
             TextField(
                 value = currentName.value,
@@ -114,7 +114,7 @@ fun DetailsScreen(
                 )
             )
 
-            Spacer(Modifier.height(Dimens.paddingMedium))
+            Spacer(Modifier.height(Dimens.paddingSmall))
 
             Text(
                 modifier = Modifier.clickable { isDatePickerShown.value = true },
@@ -125,7 +125,7 @@ fun DetailsScreen(
                 }
             )
 
-            Spacer(Modifier.height(Dimens.paddingMedium))
+            Spacer(Modifier.height(Dimens.paddingSmall))
 
             ProfileImage(
                 modifier = Modifier
@@ -134,7 +134,7 @@ fun DetailsScreen(
                 uri = uiState.image
             )
 
-            Spacer(Modifier.height(Dimens.paddingMedium))
+            Spacer(Modifier.height(Dimens.paddingSmall))
 
             Row {
                 CameraLauncherComponent(updateImage = updateImage)
@@ -144,7 +144,7 @@ fun DetailsScreen(
                 GalleryLauncherComponent(updateImage = updateImage)
             }
 
-            Spacer(Modifier.height(Dimens.paddingMedium))
+            Spacer(Modifier.height(Dimens.paddingSmall))
 
             Button(
                 onClick = goToBirthday,
