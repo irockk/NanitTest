@@ -8,12 +8,13 @@ import com.example.nanit.ui.navigation.Screen
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun BirthdayRoute() {
+fun BirthdayRoute(navController: NavController) {
     val viewModel = koinViewModel<BirthdayViewModel>()
     val uiState by viewModel.uiState.collectAsState()
 
     BirthdayScreen(
-        uiState = uiState
+        uiState = uiState,
+        goBack = navController::popBackStack
     )
 }
 
