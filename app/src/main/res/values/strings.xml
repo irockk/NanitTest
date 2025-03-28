@@ -7,4 +7,5 @@
     <string name="details_select_from_gallery_button">Select from gallery</string>
     <string name="details_birthday_picker_button">Click to pick birthday date</string>
     <string name="details_save_button">Save</string>
+    <string name="birthday_name_text">Today %1$s is</string>
 </resources>

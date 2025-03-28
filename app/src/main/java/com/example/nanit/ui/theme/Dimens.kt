@@ -5,11 +5,12 @@ import androidx.compose.ui.unit.dp
 object Dimens {
     val screenPadding = 24.dp
 
-    val borderWidth = 2.dp
-    val cornerRadius = 12.dp
+    val borderWidth = 6.dp
 
-    val paddingBig = 24.dp
-    val paddingMedium = 12.dp
+    val paddingHuge = 148.dp
+    val paddingBig = 22.dp
+    val paddingNormal = 16.dp
+    val paddingMedium = 14.dp
     val paddingSmall = 6.dp
     val paddingExtraSmall = 4.dp
 }
