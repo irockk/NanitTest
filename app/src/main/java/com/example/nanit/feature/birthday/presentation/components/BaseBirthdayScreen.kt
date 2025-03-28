@@ -30,11 +30,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.example.nanit.R
 import com.example.nanit.ui.theme.BlueDark
 import com.example.nanit.ui.theme.BlueLight
+import com.example.nanit.ui.theme.Dimens
 import com.example.nanit.ui.theme.Typography
 
 @Composable
@@ -46,12 +46,12 @@ fun BaseBirthdayScreen(
     bgImage: Painter,
     ageNumberImage: Painter
 ) {
-    val yPhotoEndOffset = remember { mutableStateOf(IntOffset.Zero) }
+    val photoEndOffset = remember { mutableStateOf(IntOffset.Zero) }
 
     Column(
         modifier = modifier
             .background(backgroundColor)
-            .padding(horizontal = 54.dp),
+            .padding(horizontal = Dimens.screenPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
@@ -66,9 +66,9 @@ fun BaseBirthdayScreen(
 
         Image(
             modifier = Modifier
-                .border(6.dp, contentColor, CircleShape)
+                .border(Dimens.borderWidth, contentColor, CircleShape)
                 .onGloballyPositioned {
-                    yPhotoEndOffset.value = IntOffset(
+                    photoEndOffset.value = IntOffset(
                         0, (it.positionOnScreen().y + it.size.height).toInt()
                     )
                 },
@@ -76,15 +76,15 @@ fun BaseBirthdayScreen(
             contentDescription = null
         )
 
-        Spacer(Modifier.height(148.dp))
+        Spacer(Modifier.height(Dimens.paddingHuge))
     }
 
     Image(
         modifier = Modifier
             .zIndex(2f)
-            .padding(top = 16.dp)
+            .padding(top = Dimens.paddingNormal)
             .fillMaxWidth()
-            .offset { yPhotoEndOffset.value },
+            .offset { photoEndOffset.value },
         painter = painterResource(R.drawable.ic_nanit),
         contentDescription = null
     )
@@ -113,7 +113,7 @@ private fun AgeContent(
             style = Typography.titleLarge
         )
 
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(Dimens.paddingMedium))
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
@@ -121,14 +121,14 @@ private fun AgeContent(
                 contentDescription = null
             )
 
-            Spacer(Modifier.width(22.dp))
+            Spacer(Modifier.width(Dimens.paddingBig))
 
             Image(
                 painter = ageNumber,
                 contentDescription = null
             )
 
-            Spacer(Modifier.width(22.dp))
+            Spacer(Modifier.width(Dimens.paddingBig))
 
             Icon(
                 painter = painterResource(R.drawable.ic_right_swirls),
@@ -136,7 +136,7 @@ private fun AgeContent(
             )
         }
 
-        Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(Dimens.paddingMedium))
 
         Text(
             text = "MONTH OLD!",
