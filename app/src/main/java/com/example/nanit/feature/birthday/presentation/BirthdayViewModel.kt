@@ -7,6 +7,7 @@ import com.example.nanit.core.AgeCalculator
 import com.example.nanit.core.Constants
 import com.example.nanit.feature.birthday.presentation.models.AgeUnit
 import com.example.nanit.feature.user.domain.UserUseCase
+import com.example.nanit.feature.user.domain.models.UserDomainModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -57,15 +58,30 @@ class BirthdayViewModel(
 
     private fun setUser() {
         viewModelScope.launch {
-            userUseCase.getUser()?.let { user ->
-                _uiState.update { uiState ->
-                    uiState.copy(
-                        name = user.name ?: Constants.EMPTY_STRING,
-                        photo = user.picture,
-                        birthday = user.birthday
-                    )
+            userUseCase.getUser().collectLatest { userNullable ->
+                userNullable?.let { user ->
+                    _uiState.update { uiState ->
+                        uiState.copy(
+                            name = user.name ?: Constants.EMPTY_STRING,
+                            photo = user.picture,
+                            birthday = user.birthday
+                        )
+                    }
                 }
             }
+        }
+    }
+
+    fun updatePhoto(uri: Uri?) {
+        viewModelScope.launch {
+            val state = uiState.value
+            userUseCase.setUser(
+                UserDomainModel(
+                    name = state.name,
+                    birthday = state.birthday,
+                    picture = uri
+                )
+            )
         }
     }
 }

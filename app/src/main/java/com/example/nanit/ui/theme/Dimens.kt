@@ -12,4 +12,6 @@ object Dimens {
     val paddingMedium = 14.dp
     val paddingSmall = 6.dp
     val paddingExtraSmall = 2.dp
+
+    val profilePictureSize = 200.dp
 }

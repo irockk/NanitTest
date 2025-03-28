@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.datastore.core.DataStoreFactory.create
 import com.example.nanit.core.createDataStoreSerializer
 import com.example.nanit.feature.user.data.models.UserDataModel
-import kotlinx.coroutines.flow.first
 import org.koin.core.annotation.Singleton
 import java.io.File
 
@@ -19,7 +18,7 @@ class UserLocalDataSource(context: Context) {
         produceFile = { File(context.filesDir, "datastore/$DATA_STORE_NAME") },
     )
 
-    suspend fun getUser() = dataStore.data.first()
+    fun getUser() = dataStore.data
 
     suspend fun updateUser(user: UserDataModel) {
         dataStore.updateData {

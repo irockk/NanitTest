@@ -1,5 +1,6 @@
 package com.example.nanit.feature.birthday.presentation
 
+import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -9,22 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.zIndex
-import com.example.nanit.R
 import com.example.nanit.feature.birthday.presentation.components.BaseBirthdayScreen
+import com.example.nanit.feature.birthday.presentation.models.BirthdayTheme
 import com.example.nanit.feature.birthday.presentation.models.toStringRes
-import com.example.nanit.ui.theme.BlueDark
-import com.example.nanit.ui.theme.BlueLight
-import com.example.nanit.ui.theme.GreenDark
-import com.example.nanit.ui.theme.GreenLight
-import com.example.nanit.ui.theme.YellowDark
-import com.example.nanit.ui.theme.YellowLight
 
 @Composable
 fun BirthdayScreen(
     uiState: BirthdayState,
+    updateImage: (uri: Uri?) -> Unit,
     goBack: () -> Unit
 ) {
     val randomScreenIndex = remember { (0..2).random() }
@@ -44,42 +39,39 @@ fun BirthdayScreen(
         0 -> {
             BaseBirthdayScreen(
                 modifier = Modifier.fillMaxSize(),
-                backgroundColor = BlueLight,
-                contentColor = BlueDark,
+                birthdayTheme = BirthdayTheme.BLUE,
                 name = uiState.name,
-                bgImage = painterResource(R.drawable.img_bg_blue),
                 ageText = uiState.ageUnit?.toStringRes(uiState.ageNumber)
                     ?.let { stringResource(it) },
                 ageNumber = uiState.ageNumber,
-                defaultPhoto = painterResource(R.drawable.img_profile_default_blue)
+                photo = uiState.photo,
+                updateImage = updateImage
             )
         }
 
         1 -> {
             BaseBirthdayScreen(
                 modifier = Modifier.fillMaxSize(),
-                backgroundColor = GreenLight,
-                contentColor = GreenDark,
+                birthdayTheme = BirthdayTheme.GREEN,
                 name = uiState.name,
-                bgImage = painterResource(R.drawable.img_bg_green),
                 ageText = uiState.ageUnit?.toStringRes(uiState.ageNumber)
                     ?.let { stringResource(it) },
                 ageNumber = uiState.ageNumber,
-                defaultPhoto = painterResource(R.drawable.img_profile_default_green)
+                photo = uiState.photo,
+                updateImage = updateImage
             )
         }
 
         else -> {
             BaseBirthdayScreen(
                 modifier = Modifier.fillMaxSize(),
-                backgroundColor = YellowLight,
-                contentColor = YellowDark,
+                birthdayTheme = BirthdayTheme.YELLOW,
                 name = uiState.name,
-                bgImage = painterResource(R.drawable.img_bg_yellow),
                 ageText = uiState.ageUnit?.toStringRes(uiState.ageNumber)
                     ?.let { stringResource(it) },
                 ageNumber = uiState.ageNumber,
-                defaultPhoto = painterResource(R.drawable.img_profile_default_yellow)
+                photo = uiState.photo,
+                updateImage = updateImage
             )
         }
     }
