@@ -14,7 +14,8 @@ fun BirthdayRoute(navController: NavController) {
 
     BirthdayScreen(
         uiState = uiState,
-        goBack = navController::popBackStack
+        goBack = navController::popBackStack,
+        updateImage = viewModel::updatePhoto
     )
 }
 

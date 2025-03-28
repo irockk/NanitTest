@@ -1,30 +1,30 @@
 package com.example.nanit.ui.components
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import com.example.nanit.R
+import androidx.compose.ui.platform.LocalContext
 import com.example.nanit.core.Constants.GALLERY_LAUNCHER_INPUT
 
 @Composable
 fun GalleryLauncherComponent(
-    modifier: Modifier = Modifier,
-    updateImage: (uri: Uri) -> Unit
+    updateImage: (uri: Uri) -> Unit,
+    content: @Composable (onClick: () -> Unit) -> Unit
 ) {
-    val galleryLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent(),
-            onResult = { newUri ->
-                newUri?.let {
-                    updateImage(newUri)
-                }
-            })
+    val context = LocalContext.current
 
-    Button(modifier = modifier, onClick = { galleryLauncher.launch(GALLERY_LAUNCHER_INPUT) }) {
-        Text(text = stringResource(R.string.details_select_from_gallery_button))
-    }
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
+            it?.let { uri ->
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                updateImage(uri)
+            }
+        }
+
+    content { launcher.launch(GALLERY_LAUNCHER_INPUT) }
 }

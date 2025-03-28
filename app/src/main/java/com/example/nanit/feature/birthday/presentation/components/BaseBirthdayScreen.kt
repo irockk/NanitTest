@@ -1,5 +1,6 @@
 package com.example.nanit.feature.birthday.presentation.components
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,12 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -25,26 +29,41 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.zIndex
 import com.example.nanit.R
-import com.example.nanit.ui.theme.BlueDark
-import com.example.nanit.ui.theme.BlueLight
+import com.example.nanit.feature.birthday.presentation.models.BirthdayTheme
+import com.example.nanit.ui.components.PhotoPickerBottomSheet
 import com.example.nanit.ui.theme.Dimens
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BaseBirthdayScreen(
     modifier: Modifier = Modifier,
-    backgroundColor: Color,
-    contentColor: Color,
+    birthdayTheme: BirthdayTheme,
     name: String,
-    bgImage: Painter,
     ageText: String?,
     ageNumber: Int?,
-    defaultPhoto: Painter
+    photo: Uri?,
+    updateImage: (uri: Uri?) -> Unit
 ) {
+    val sheetState = rememberModalBottomSheetState()
+    val coroutineScope = rememberCoroutineScope()
+
+    if (sheetState.isVisible) {
+        PhotoPickerBottomSheet(
+            sheetState = sheetState,
+            onDismiss = { coroutineScope.launch { sheetState.hide() } },
+            updateImage = { uri ->
+                updateImage(uri)
+                coroutineScope.launch { sheetState.hide() }
+            }
+        )
+    }
+
     val photoEndOffset = remember { mutableStateOf(IntOffset.Zero) }
 
     Column(
         modifier = modifier
-            .background(backgroundColor)
+            .background(birthdayTheme.backgroundColor)
             .padding(horizontal = Dimens.screenPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
@@ -62,9 +81,13 @@ fun BaseBirthdayScreen(
         Spacer(Modifier.weight(1f))
 
         ProfilePhotoContent(
-            contentColor = contentColor,
-            defaultPhoto = defaultPhoto,
-            updatePhotoEndOffset = { photoEndOffset.value = it }
+            modifier = Modifier.size(Dimens.profilePictureSize),
+            contentColor = birthdayTheme.contentColor,
+            defaultPhoto = painterResource(birthdayTheme.defaultPhotoRes),
+            buttonIcon = painterResource(birthdayTheme.buttonIconRes),
+            photo = photo,
+            updatePhotoEndOffset = { photoEndOffset.value = it },
+            onUpdatePhotoClick = { coroutineScope.launch { sheetState.show() } }
         )
 
         Spacer(Modifier.height(Dimens.paddingHuge))
@@ -81,7 +104,7 @@ fun BaseBirthdayScreen(
 
     Image(
         modifier = Modifier.fillMaxSize(),
-        painter = bgImage,
+        painter = painterResource(birthdayTheme.bgImageRes),
         contentScale = ContentScale.FillWidth,
         alignment = Alignment.BottomCenter,
         contentDescription = null
@@ -108,12 +131,11 @@ private fun Int.ageNumberToPainters(): List<Painter> {
 fun BaseBirthdayScreenPreview(modifier: Modifier = Modifier) {
     BaseBirthdayScreen(
         modifier = Modifier.fillMaxSize(),
-        backgroundColor = BlueLight,
-        contentColor = BlueDark,
+        birthdayTheme = BirthdayTheme.BLUE,
         name = "Ira Ira Superhero SuperIra",
-        bgImage = painterResource(R.drawable.img_bg_blue),
         ageText = "years",
         ageNumber = 120,
-        defaultPhoto = painterResource(R.drawable.img_profile_default_blue)
+        photo = null,
+        updateImage = {}
     )
 }

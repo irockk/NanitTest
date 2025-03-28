@@ -8,6 +8,7 @@ import com.example.nanit.feature.user.domain.UserUseCase
 import com.example.nanit.feature.user.domain.models.UserDomainModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
@@ -32,7 +33,8 @@ class DetailsViewModel(private val userUseCase: UserUseCase) : ViewModel() {
 
     private fun setState() {
         viewModelScope.launch {
-            userUseCase.getUser()?.let { user ->
+            userUseCase.getUser().collectLatest { userNullable ->
+                userNullable?.let { user ->
                 _uiState.update { uiState ->
                     uiState.copy(
                         name = user.name ?: Constants.EMPTY_STRING,
@@ -40,6 +42,7 @@ class DetailsViewModel(private val userUseCase: UserUseCase) : ViewModel() {
                         image = user.picture
                     )
                 }
+            }
             }
         }
     }
