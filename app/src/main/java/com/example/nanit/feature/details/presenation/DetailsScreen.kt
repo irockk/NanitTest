@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.nanit.R
@@ -51,8 +52,13 @@ fun DetailsScreen(
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
 
-    val currentName = remember(uiState.name.isBlank()) {
-        mutableStateOf(TextFieldValue(text = uiState.name))
+    val currentName = remember(uiState.name) {
+        mutableStateOf(
+            TextFieldValue(
+                text = uiState.name,
+                selection = TextRange(uiState.name.length)
+            )
+        )
     }
 
     val isDatePickerShown = rememberSaveable { mutableStateOf(false) }
@@ -102,10 +108,7 @@ fun DetailsScreen(
 
             TextField(
                 value = currentName.value,
-                onValueChange = {
-                    currentName.value = it
-                    updateName(it.text)
-                },
+                onValueChange = { updateName(it.text) },
                 label = {
                     Text(stringResource(R.string.details_name))
                 },
