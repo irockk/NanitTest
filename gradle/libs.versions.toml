@@ -22,6 +22,8 @@ coilVersion = "3.1.0"
 
 gsonVersion = "2.11.0"
 
+capturableVersion = "3.0.1"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 
@@ -53,6 +55,8 @@ coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref 
 coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coilVersion" }
 
 gson-gson = {group = "com.google.code.gson", name = "gson", version.ref = "gsonVersion"}
+
+capturable = { group = "dev.shreyaspatil", name = "capturable", version.ref = "capturableVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
