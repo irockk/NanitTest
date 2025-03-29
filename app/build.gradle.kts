@@ -66,6 +66,8 @@ dependencies {
 
     implementation(libs.gson.gson)
 
+    implementation(libs.capturable)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

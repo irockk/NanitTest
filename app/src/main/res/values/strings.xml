@@ -17,4 +17,5 @@
     <string name="birthday_unit_month">month</string>
     <string name="birthday_unit_old_text">%1$s old</string>
     <string name="details_change_photo_button">Change photo</string>
+    <string name="birthday_share_button">Share the news</string>
 </resources>
